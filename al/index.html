@@ -1,0 +1,122 @@
+<html>
+    <head>
+        <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+
+        <script>
+            var toolbox = {
+                "kind": "flyoutToolbox",
+                "contents": []
+            }
+
+            var counter = 0
+
+            let defineConnective = function(name, symbol, argument_count, fn) {
+                let reduced_val = name.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0)
+                console.log(reduced_val)
+
+                let message0 = []
+                let args0 = []
+
+                if (argument_count == 1) {
+                    message0.push(symbol)
+                    message0.push("%1")
+                    message0.push("%2")
+
+                    args0.push({ "type": "input_dummy" })
+                    args0.push({ "type": "input_value", "name": "p0", "check": "Boolean" })
+
+                } else {
+                    message0.push("(")
+                    message0.push("%1")
+
+                    args0.push({ "type": "input_dummy" })
+
+                    let s = args0.length
+                    for (let i = 0 + args0.length, j = 1 + args0.length; i < argument_count + s; (i++ + j++)) {
+                        message0.push("%"+j)
+                        args0.push({ "type": "input_value", "name": "p"+i, "check": "Boolean" })
+                        
+                        if (i+1 < argument_count + s) {
+                            message0.push(symbol)
+                            message0.push("%"+(++j))
+                            
+                            args0.push({ "type": "input_dummy" })
+                        }
+                    }
+                    message0.push(")")
+                    message0.push("%"+(args0.length+1))
+                    args0.push({ "type": "input_dummy" })
+                }
+
+                message0 = message0.join(" ")
+                console.log(message0)
+                console.log(JSON.stringify(args0))
+
+                Blockly.Blocks[name] = {
+                    init: function() {
+                        let json = {
+                            "type": "jh",
+                            "message0": message0,
+
+                            "args0": args0,
+
+                            "inputsInline": true,
+                            "output": "Boolean",
+                            "colour": ((reduced_val % 10 + 8) * (360 / 20)),
+                            "tooltip": symbol,
+                            "helpUrl": ""
+                        }
+                        this.jsonInit(json)
+                    }
+                }
+
+                toolbox.contents.push({ kind: "block", type: name })
+            }
+
+            let defineSentence = function(name) {
+                Blockly.Blocks[name] = {
+                    init: function() {
+                        let json = {
+                            "type": "jh",
+                            "message0": name+" %1",
+
+                            "args0": [{ type: "dummy_input" }],
+
+                            "inputsInline": true,
+                            "output": "Boolean",
+                            "colour": 90,
+                            "tooltip": "Satz",
+                            "helpUrl": ""
+                        }
+                        this.jsonInit(json)
+                    }
+                }
+
+                toolbox.contents.push({ kind: "block", type: name })
+            }
+
+            defineConnective("not", "¬", 1)
+            defineConnective("and", "∧", 2)
+            defineConnective("or", "∨", 2)
+            defineConnective("cond", "→", 2)
+            defineConnective("bicond", "↔", 2)
+
+            defineSentence("p")
+            defineSentence("q")
+            defineSentence("r")
+            defineSentence("s")
+            defineSentence("t")
+            defineSentence("u")
+            defineSentence("v")
+            defineSentence("w")
+        </script>
+    </head>
+
+    <body>
+        <div id="blocklyDiv" style="height: 95vh; width: 95vw;"></div>
+
+        <script>
+            var workspace = Blockly.inject('blocklyDiv', {toolbox: toolbox});
+        </script>
+    </body>
+</html>
